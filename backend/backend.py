@@ -10,7 +10,10 @@ from fastapi.responses import JSONResponse
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import StreamingResponse, FileResponse
 app = FastAPI()
-
+@app.get("/")
+async def setup():
+	os.system('py setup.py')
+	return "Setup Complete"
 @app.get("/get_video")
 async def main():
     return FileResponse('./Destination/SegmentationandEF/videos/Output.avi')

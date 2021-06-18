@@ -41,10 +41,12 @@ def savevideo(file):
 	cv.destroyAllWindows()
 
 def app():
+	_ = requests.get(url)
 	st.title("Left Ventricle Segmenter and Ejection Fraction Predictor")
 	st.markdown("Simply upload your DICOM file of a heart below, our model will then segment the left ventricle and return the ejection fraction instantly")
 	datafile = st.file_uploader("Upload Video", type=['avi'])
 	if st.button("Upload"):
+		st.write("The process will take around 5-8 minutes")
 		files = {"file": datafile.getvalue()}
 		res = requests.post(url+"send_video", files=files)
 		res = res.json()
