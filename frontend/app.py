@@ -3,11 +3,34 @@ import cv2 as cv
 import requests
 import tempfile
 import pandas as pd
+import numpy as np
 from io import StringIO
 import base64
 import os
 
 url = "http://localhost:5000/"
+def avi_to_mp4(input_path, output_path):
+	images = []
+	cap = cv.VideoCapture(input_path)
+	frame_width = int(cap.get(3))
+	frame_height = int(cap.get(4))
+	out = cv.VideoWriter(output_path ,cv.VideoWriter_fourcc(*'avc1'),cap.get(cv.CAP_PROP_FPS), (frame_width,frame_height))
+	while(cap.isOpened()):
+		ret, frame = cap.read()
+		if ret == True:
+			out.write(frame)
+
+			if cv.waitKey(25) & 0xFF == ord('q'):
+				break
+		else:
+			break
+
+	# When everything done, release the video capture object
+	cap.release()
+	out.release()
+	# Closes all the frames
+	cv.destroyAllWindows()
+
 def get_binary_file_downloader_html(bin_file, file_label='File'):
     with open(bin_file, 'rb') as f:
         data = f.read()
@@ -54,17 +77,23 @@ def app():
 		df=pd.read_csv(data)
 		df = df.to_dict()
 		df = list(df.keys())[0]
-		df = df.replace("\n","").replace("\r","").split(",")
+		df = df.replace("\\n","").replace("\\r","").split(",")
 		df = {str(i):[value] for i,value in enumerate(df)}
 		df = pd.DataFrame(df)
+		st.dataframe(df)
 		st.write("Finished uploading")
 		html = create_download_link(df,"Ef")
-		st.markdown(html, unsafe_allow_html=True)
 		video = requests.get(url+"get_video")
 		video = video.content
 		savevideo(video)
+		avi_to_mp4('Output.avi', 'Output.mp4')
+		video_file = open('Output.mp4', 'rb')
+		video_bytes = video_file.read()
+		st.video(video_bytes)
+		st.markdown(html, unsafe_allow_html=True)
 		st.markdown(get_binary_file_downloader_html('Output.avi', 'Video'), unsafe_allow_html=True)
 		st.write("Process Completed")
+		
 
 if __name__ == "__main__": 
 	app()
