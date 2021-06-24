@@ -42,14 +42,14 @@ def create_download_link(object_to_download, download_filename):
         object_to_download = object_to_download.to_csv(index=False)
         b64 = base64.b64encode(object_to_download.encode()).decode()
         return f'<a href="data:application/octet-stream;base64,{b64}" download="{download_filename}.csv">Download file</a>'
-def savevideo(file):
+def savevideo(file, path='Output.avi'):
 	tmpfile = tempfile.NamedTemporaryFile(delete=False)
 	tmpfile.write(file)
 	capture = cv.VideoCapture(tmpfile.name)
 	frame_width = int(capture.get(3))
 	frame_height = int(capture.get(4))
 	size = (frame_width, frame_height)
-	output = cv.VideoWriter('Output.avi', cv.VideoWriter_fourcc(*'MJPG'),capture.get(cv.CAP_PROP_FPS), size)
+	output = cv.VideoWriter(path, cv.VideoWriter_fourcc(*'MJPG'),capture.get(cv.CAP_PROP_FPS), size)
 	while(True):
 		ret,frame = capture.read()
 		  
@@ -74,6 +74,7 @@ def app():
 		res = requests.post(url+"send_video", files=files)
 		res = res.json()
 		data = StringIO(res["csv"]) 
+		st.write("The Predicted Ejection Fraction will be shown below")
 		df=pd.read_csv(data)
 		df = df.to_dict()
 		df = list(df.keys())[0]
@@ -81,7 +82,8 @@ def app():
 		df = {str(i):[value] for i,value in enumerate(df)}
 		df = pd.DataFrame(df)
 		st.dataframe(df)
-		st.write("Finished uploading")
+		st.write("Finished uploading the video")
+		st.write("Download the folder contaning the csv file from the link below")
 		html = create_download_link(df,"Ef")
 		video = requests.get(url+"get_video")
 		video = video.content
@@ -92,8 +94,7 @@ def app():
 		st.video(video_bytes)
 		st.markdown(html, unsafe_allow_html=True)
 		st.markdown(get_binary_file_downloader_html('Output.avi', 'Video'), unsafe_allow_html=True)
-		st.write("Process Completed")
-		
-
+		st.write("Here is the Segmented video")
+		st.write("Thank you for using our app")
 if __name__ == "__main__": 
 	app()
