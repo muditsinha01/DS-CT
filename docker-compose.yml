@@ -1,4 +1,4 @@
-version : '3'
+version: '3'
 
 services:
   frontend:
@@ -9,9 +9,10 @@ services:
       - backend
     volumes:
       - ./storage:/storage
-    backend:
-      build: backend
-      ports:
-        - 5000:5000
-      volumes:
-        - ./storage:/storage
+  backend:
+    build: backend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./storage:/storage
+    

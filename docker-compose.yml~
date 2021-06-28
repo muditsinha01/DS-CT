@@ -4,14 +4,15 @@ services:
   frontend:
     build: frontend
     ports:
-      - 8501:8501
+      - 8501:80
     depends_on:
       - backend
     volumes:
       - ./storage:/storage
-    backend:
-      build: backend
-      ports:
-        - 5000:5000
-      volumes:
-        - ./storage:/storage
+  backend:
+    build: backend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./storage:/storage
+    

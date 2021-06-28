@@ -8,7 +8,7 @@ from io import StringIO
 import base64
 import os
 
-url = "http://localhost:5000/"
+url = "http://192.168.0.102:5000/"
 def avi_to_mp4(input_path, output_path):
 	images = []
 	cap = cv.VideoCapture(input_path)
