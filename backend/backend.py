@@ -9,14 +9,15 @@ import pandas as pd
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import StreamingResponse, FileResponse
+import aiofiles
 app = FastAPI()
 @app.get("/")
 async def setup():
 	os.system('py setup.py')
-	return "Setup Complete"
+	return "Setup Complete" 
 @app.get("/get_video")
 async def main():
-    return FileResponse('./Destination/SegmentationandEF/videos/Output.avi')
+    return FileResponse('./Destination/SegmentationResults/videos/Output3.avi')
 
 @app.post("/send_video")
 def get_image(file: bytes = File(...)):
@@ -44,7 +45,7 @@ def get_image(file: bytes = File(...)):
 	output.release()
 	cv.destroyAllWindows()
 	os.system("py run_model.py")
-	with open('./Destination/cedars_ef_output.csv', 'rb') as csv:
+	with open('./Destination/EjectionFractionResults/EjectionFraction.csv', 'rb') as csv:
 		csv_bytes_obj = csv.read()
 	csv_bytes_obj = csv_bytes_obj.decode('utf-8')
 	csv_bytes_obj = json.dumps(csv_bytes_obj)

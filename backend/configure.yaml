@@ -1,0 +1,41 @@
+#configuration file for data science pipeline
+
+#Paths for preprocessing the data and storing them in folders
+input_filepath: ./Unprocessedvideos/
+semi_processed_filepath: ./Semiprocessedvideos/
+completely_processed_filepath: ./Completelyprocessedvideos/
+
+#Paths for storing the processed video, pre-trained model weights and results
+destination_folder: ./Destination
+video_folder: ./Videos
+weights_folder: ./Pre_Trained_Modelswithweights
+
+#Properties for semi-processing the video if the video is unprocessed in order to mask the data
+#These properties are set for masking out the patient data and other text data for avi videos of resolution 800*600 and make sure apical 4 chamber view is centered
+#units for the cropping/masking are in pixels
+#Make sure the number of pixels for starting width, ending width and starting height,ending height match with the video resolution   
+#frame-width of the resulting semi-processed video
+crp_width: 570
+#frame-height of the resulting semi-processed video
+crp_height: 380
+#from which pixel of the original video the semi-proccesed video must start(for width)
+strt_width: 175
+#At which pixel of the original video the semi-proccesed video must end(for width)
+end_width: 745
+#from which pixel of the original video the semi-proccesed video must start(for height)
+strt_height: 85
+#At which pixel of the original video the semi-proccesed video must end(for height)
+end_height: 465
+
+#links for downloading the pre-trained models with weights
+seg_weights_url: https://github.com/douyang/EchoNetDynamic/releases/download/v1.0.0/deeplabv3_resnet50_random.pt
+ejection_url: https://github.com/douyang/EchoNetDynamic/releases/download/v1.0.0/r2plus1d_18_32_2_pretrained.pt
+
+#Path of Results for Ejection Fraction and Segmentation Output 
+destination_sg: ./Destination/SegmentationResults
+destination_ef: ./Destination/EjectionFractionResults
+
+#Properties for Echocardiogram EjectionFraction
+frames: 32
+period: 1
+batch_size: 20

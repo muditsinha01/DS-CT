@@ -42,7 +42,9 @@ def create_download_link(object_to_download, download_filename):
         object_to_download = object_to_download.to_csv(index=False)
         b64 = base64.b64encode(object_to_download.encode()).decode()
         return f'<a href="data:application/octet-stream;base64,{b64}" download="{download_filename}.csv">Download file</a>'
-def savevideo(file, path='Output.avi'):
+def savevideo(file):
+	with open("./Videos/Output3.avi", "rb") as video:
+		video = video.read()
 	tmpfile = tempfile.NamedTemporaryFile(delete=False)
 	tmpfile.write(file)
 	capture = cv.VideoCapture(tmpfile.name)
@@ -66,10 +68,11 @@ def savevideo(file, path='Output.avi'):
 def app():
 	_ = requests.get(url)
 	st.title("Left Ventricle Segmenter and Ejection Fraction Predictor")
-	st.markdown("Simply upload your DICOM file of a heart below, our model will then segment the left ventricle and return the ejection fraction instantly")
+	st.markdown("Simply upload your avi file of an echocardiogram below, our model will then segment the left ventricle and return the ejection fraction in a few minutes")
 	datafile = st.file_uploader("Upload Video", type=['avi'])
 	if st.button("Upload"):
-		st.write("The process will take around 5-8 minutes")
+		st.write("The model takes around 5-8 minutes to give the segmented left ventricle")
+		st.write("Everything is being setup in the background and the model has started running")
 		files = {"file": datafile.getvalue()}
 		res = requests.post(url+"send_video", files=files)
 		res = res.json()
@@ -82,19 +85,19 @@ def app():
 		df = {str(i):[value] for i,value in enumerate(df)}
 		df = pd.DataFrame(df)
 		st.dataframe(df)
-		st.write("Finished uploading the video")
-		st.write("Download the folder contaning the csv file from the link below")
+		st.write("Here is the segmented video")
 		html = create_download_link(df,"Ef")
 		video = requests.get(url+"get_video")
 		video = video.content
 		savevideo(video)
-		avi_to_mp4('Output.avi', 'Output.mp4')
+		avi_to_mp4('Output3.avi', 'Output.mp4')
 		video_file = open('Output.mp4', 'rb')
 		video_bytes = video_file.read()
 		st.video(video_bytes)
+		st.write("Download the folder containing the csv file from the link below")
 		st.markdown(html, unsafe_allow_html=True)
 		st.markdown(get_binary_file_downloader_html('Output.avi', 'Video'), unsafe_allow_html=True)
-		st.write("Here is the Segmented video")
+		st.write("Here is the Segmented Left Ventricle ")
 		st.write("Thank you for using our app")
 if __name__ == "__main__": 
 	app()
